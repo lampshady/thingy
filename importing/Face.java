@@ -1,20 +1,18 @@
 package importing;
 
+import java.util.ArrayList;
+
+import javax.vecmath.Vector3f;
+
 public class Face {
 
-	float[] vertices;
-	float[] normals;
-	float[] textures;
+	ArrayList<Vector3f> vertices;
+	ArrayList<Vector3f> normals;
+	ArrayList<Float> textures;
 	
-	Face(float[] verts, float[] txtrs, float[] norms) {
-		vertices = new float[verts.length];
-		textures = new float[txtrs.length];
-		normals = new float[norms.length];
-		if (verts != null)
-			System.arraycopy(verts, 0, vertices, 0, verts.length);
-		if (txtrs != null)
-			System.arraycopy(txtrs, 0, textures, 0, txtrs.length);
-		if (norms != null)
-			System.arraycopy(norms, 0, normals, 0, norms.length);
+	Face(ArrayList<Vector3f> verts, ArrayList<Float> txtrs, ArrayList<Vector3f> norms) {
+		vertices = verts;
+		textures = txtrs;
+		normals = norms;
 	}
 }
