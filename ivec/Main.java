@@ -1,25 +1,24 @@
 package ivec;
 
+import importing.FileLoader;
+
 import java.applet.Applet;
 import java.awt.Canvas;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Frame;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.HashMap;
 
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.glu.GLU;
+
 
 public class Main extends Applet {
 	DisassemblyMenu popup;
@@ -82,15 +81,30 @@ public class Main extends Applet {
 		try{
 			boolean isRunning = true;
 			model_hash = new HashMap<String, Integer>();
-			//Load Files
-
-					
-			String folder = "http://192.168.143.17/ivec/lib/Models/";
-			String path;
-
+			
 			setupComponents();
 			
-			for( int i = 0; i < fileList.length; i++ )
+			//Load Files		
+			//String folder = "http://192.168.143.17/ivec/lib/Models/";
+			//String path;
+
+			//Put in Loading Label
+			GLView.setVisible(false);
+			popup.setVisible(false);
+			
+			
+			
+			//Image img = ImageIO.read();
+			Icon asdf = new ImageIcon(new URL("http://192.168.143.17/ivec/images/loading.gif"));
+			JLabel loadingImage = new JLabel(asdf);
+			loadingImage.setSize(width, height);
+			
+			this.add(loadingImage);
+			loadingImage.setVisible(true);
+			
+			this.repaint();
+			
+			/*for( int i = 0; i < fileList.length; i++ )
 			{
 				path = folder + fileList[i] + ".obj";
 				model_hash.put(fileList[i], i);
@@ -108,7 +122,16 @@ public class Main extends Applet {
 				displayed_model=fileList[0];
 			
 				Display.releaseContext();
-			}
+			}*/
+			
+			this.remove(loadingImage);
+			GLView.setVisible(true);
+			popup.setVisible(true);
+			popup.revalidate();
+			this.repaint();
+			
+			String filePath = "./lib/Models/xgltest.xgl";
+			int drawID = FileLoader.loadFile(filePath);
 			
 			//showDisassemblyMenu();
 			while (isRunning) {				
@@ -116,7 +139,8 @@ public class Main extends Applet {
 				input.handleMouse();
 
 				//Draw world
-				render.draw((int)model_hash.get(displayed_model));
+				//render.draw((int)model_hash.get(displayed_model));
+				render.draw(drawID);
 				
 				//Check if it's time to close
 				if (Display.isCloseRequested()) {
@@ -129,13 +153,13 @@ public class Main extends Applet {
 			//System.exit(-1);
 		}
 	}
-
+	/*
 	public void showDisassemblyMenu() throws LWJGLException
 	{
 		//GLView.setBounds(-1 * (popup_width+expand_button.getWidth()), 0, width-expand_button.getWidth(), height);
-		GLView.setBounds(0, 0, width, height);
-		popup.setBounds(0, 0, width, height);
-		
+		GLView.setBounds(0, 0, width-popup.getWidth()-expand_button.getWidth(), height);
+		popup.setBounds(width-popup_width, 0, popup_width, height);
+		expand_button.setBounds((width-popup_width)-expand_button.getWidth(), 0, button_width, button_height);
 		
 		Display.makeCurrent();
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
@@ -151,10 +175,12 @@ public class Main extends Applet {
 		this.resize(width, height);
 	}
 	
+	
 	public void hideDisassemblyMenu( String clicked )
 	{
-		GLView.setBounds(0, 0, width, height);
-		popup.setBounds(0, 0, width, height);
+		GLView.setBounds(0, 0, width-expand_button.getWidth(), height);
+		popup.setBounds(GLView.getWidth()+expand_button.getWidth(), 0, width, height);
+		expand_button.setBounds(GLView.getWidth(), 0, button_width, button_height);
 		
 		this.repaint();
 		popup.revalidate();
@@ -171,25 +197,26 @@ public class Main extends Applet {
 				this.displayed_model = fileList[0];
 			}
 		}
-	}
+	}*/
+	
 	
 	/*
 	public void showDisassemblyMenu() throws LWJGLException
 	{
 		GLView.setBounds(
-				-(GLView.getWidth())+20
+				0
 				, 0
 				, GLView.getWidth()
 				, GLView.getHeight()
 		);
 		expand_button.setBounds(
-				50, 
+				16000, 
 				0, 
 				expand_button.getWidth(), 
 				expand_button.getHeight()
 		);
 		popup.setBounds(
-				80, 
+				800, 
 				0, 
 				popup.getWidth(), 
 				popup.getHeight()
@@ -243,9 +270,70 @@ public class Main extends Applet {
 		}
 	}
 	*/
+	
+	public void showDisassemblyMenu() throws LWJGLException
+	{
+		GLView.setBounds(
+				800,
+				0,
+				width, 
+				height
+		);
+
+		popup.setBounds(
+				0, 
+				0, 
+				width, 
+				height
+		);
+		
+		this.repaint();
+		popup.revalidate();
+		
+		//Stupid resize hack to get it to display as an Applet
+		this.resize(width, 481);
+		this.resize(width, height);
+	}
+	
+	
+	public void hideDisassemblyMenu( String clicked )
+	{
+		GLView.setBounds(
+				0,
+				0,
+				GLView.getWidth(),
+				GLView.getHeight()
+		);
+		popup.setBounds(
+				800,
+				0, 
+				popup.getWidth(), 
+				popup.getHeight()
+		);
+		
+		
+		this.repaint();
+		popup.revalidate();
+		this.resize(width, height + 1);
+		this.resize(width, height);
+		//If model was selected
+		if(!clicked.equals("")) {
+			//change model
+			this.displayed_model = clicked;
+		} else {
+			//If no model has been selected pick the root
+			//Else leave it alone
+			if(this.displayed_model.equals("")) {
+				this.displayed_model = fileList[0];
+			}
+		}
+	}
+	
+	
 	public void setupComponents() throws LWJGLException
 	{
 		//Create buttons and listeners for expanding tree
+		/*
 		expand_button = new JButton(">");
 		expand_button.setPreferredSize(new Dimension(25,this.getHeight()));
 		expand_button.setVisible(true);
@@ -271,6 +359,8 @@ public class Main extends Applet {
 				
 			}
 		});
+		*/
+		
 		//Maybe resize here
 		setBackground(new Color(0));
 		
@@ -279,8 +369,8 @@ public class Main extends Applet {
 		GLView = new Canvas();
 		add(GLView);
 		GLView.setFocusable(true);
-		GLView.requestFocus();
-		GLView.setSize(getWidth()-expand_button.getWidth(), getHeight());
+		
+		GLView.setSize(width, height);
 		
 		popup = new DisassemblyMenu(getWidth()/2, getHeight(), this);
 		add(popup);
@@ -289,7 +379,7 @@ public class Main extends Applet {
 		Display.create();
 		
 		showDisassemblyMenu();
-		//Make game "pieces"
+		//hideDisassemblyMenu("9161-HEATER");
 
 		//Create a texture holder
 		texture = new TextureList();

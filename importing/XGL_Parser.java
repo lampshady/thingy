@@ -15,9 +15,9 @@ public class XGL_Parser extends Parser{
 	ArrayList<Texture> textureListAlpha;
 	ArrayList<Texture> textureListNoAlpha;
 	*/
-	HashMap<Integer, Vector3f> vertices;
-	HashMap<Integer, Vector3f> normals;
-	ArrayList<Face> faces;
+	HashMap<Integer, Vector3f> vertices = new HashMap<Integer, Vector3f>();
+	HashMap<Integer, Vector3f> normals = new HashMap<Integer, Vector3f>();
+	ArrayList<Face> faces = new ArrayList<Face>();
 	
 	//Do nothing in the contructor  BLAH, BLAH I SAY
 	XGL_Parser(){}
@@ -45,7 +45,7 @@ public class XGL_Parser extends Parser{
 	*/
 	public void readFile(BufferedReader f)
 	{
-		String[] temp = null;
+		String[] temp = new String[1];
 		int endTag;
 		String[] tagParams;
 		//int tagID = 0;
@@ -60,15 +60,15 @@ public class XGL_Parser extends Parser{
 	    tempData.replace("\n", "");
 	    //tempData.replace(" ", "");
 	    
-	    fileData = tempData.split("<|>");
+	    fileData = tempData.split("(\\s*>\\s*<\\s*)|(\\s*>\\s*)|(\\s*<\\s*)");
 	    
-	    if( fileData[0] == "WORLD"){
-	    	for( int i = 1; i < fileData.length; i++)
+	    if( fileData[1].equals("WORLD")){
+	    	for( int i = 2; i < fileData.length; i++)
 		    {
 	    		tagParams = fileData[i].split(" ");
-	    		for( int j = 0; i < possibleSubTags.length; i++)
+	    		for( int j = 0; j < possibleSubTags.length; j++)
 	    		{
-	    			if(tagParams[0] == possibleSubTags[j])
+	    			if(tagParams[0].equals(possibleSubTags[j]))
 			    	{
 			    		//tagID = findID(tagParams);
 			    		
@@ -76,13 +76,14 @@ public class XGL_Parser extends Parser{
 			    		temp = new String[endTag-i-1];
 			    		System.arraycopy(fileData, i+1, temp, 0, endTag-i-1);
 			    		i=endTag;
+			    		break;
 			    	}
 	    		}
 	    		
-		    	if(tagParams[0] == "MESH")
+		    	if(tagParams[0].equals("MESH"))
 		    	{
 		    		readMesh(temp, tagParams);
-		    	}else if (tagParams[0] == "MAT")
+		    	}else if (tagParams[0].equals("MAT"))
 		    	{
 		    		readMaterial(temp, tagParams);
 		    	}
@@ -128,14 +129,15 @@ public class XGL_Parser extends Parser{
 		String[] subTagParams;
 		int endTag;
 		//int subTagID = 0;
-		String[] temp = null;
+		String[] temp = new String[1];
 		
-		for( int i = 1; i < fileData.length; i++)
+		for( int i = 0; i < fileData.length; i++)
 	    {
     		subTagParams = fileData[i].split(" ");
-    		for( int j = 0; i < possibleSubTags.length; i++)
+
+    		for( int j = 0; j < possibleSubTags.length; j++)
     		{
-    			if(tagParams[0] == possibleSubTags[j])
+    			if(subTagParams[0].equals(possibleSubTags[j]))
 		    	{
 		    		//subTagID = findID(tagParams);
 		    		
@@ -146,16 +148,16 @@ public class XGL_Parser extends Parser{
 		    	}
     		}
     		
-    		if(subTagParams[0] == "F")
+    		if(subTagParams[0].equals("F"))
 			{
 	    		readFace(temp, subTagParams);
-			}else if( subTagParams[0] == "P")
+			}else if( subTagParams[0].equals("P"))
 			{
 	    		readPoint(temp, subTagParams);
-			}else if (subTagParams[0] == "N")
+			}else if (subTagParams[0].equals("N"))
 			{
 	    		readNormal(temp, subTagParams);
-			}else if (subTagParams[0] == "MAT")
+			}else if (subTagParams[0].equals("MAT"))
 			{
 	    		readMaterial(temp, subTagParams);
 			}
@@ -178,21 +180,24 @@ public class XGL_Parser extends Parser{
 		
 		startTag = findTag("MAT", fileData, 0);
 		endTag = findTag("\\MAT", fileData, startTag);
+			
+		if( startTag != 0)
+		{
+			subTagParams = fileData[startTag].split(" ");
+			//subTagID = findID(subTagParams);
+			
+			temp = new String[endTag-startTag-1];
+			System.arraycopy(fileData, startTag+1, temp, 0, endTag-startTag-1);
+			readMaterial(temp, subTagParams);
+		}
 		
-		subTagParams = fileData[startTag].split(" ");
-		//subTagID = findID(subTagParams);
-		
-		temp = new String[endTag-startTag-1];
-		System.arraycopy(fileData, startTag+1, temp, 0, endTag-startTag-1);
-		readMaterial(temp, subTagParams);
-		
-		for(int i = 0; i < 3; i++)
+		for(int i = 1; i <= 3; i++)
 		{
 			startTag = findTag("FV" + i, fileData, 0);
-			endTag = findTag("\\FV" + i, fileData, startTag);
+			endTag = findTag("/FV" + i, fileData, startTag);
 			
 			position = findTag("P", fileData, startTag) + 1;
-			if( position < endTag && position != 0 )
+			if( position < endTag && position != 1 )
 			{
 				fileData[position].replace(" ", "");
 				temp = fileData[position].split(",");
@@ -211,7 +216,7 @@ public class XGL_Parser extends Parser{
 			}
 			
 			position = findTag("N", fileData, startTag) + 1;
-			if( position < endTag && position != 0 )
+			if( position < endTag && position != 1 )
 			{
 				fileData[position].replace(" ", "");
 				temp = fileData[position].split(",");
@@ -235,7 +240,7 @@ public class XGL_Parser extends Parser{
 		//Stuff for Shader Groups goes here
 		
 		//Create new Face
-		faces.add(new Face().setWithVectors(points, null, norms));
+		faces.add(new Face(points, null, norms));
 	}
 	
 	private void readPoint(String[] fileData, String[] tagParams) 
@@ -290,7 +295,7 @@ public class XGL_Parser extends Parser{
 		int temp = 0;
 		for(int i = startAt; i < data.length; i++)
 		{
-			if(data[i].split(" ")[0] == tag)
+			if(data[i].split(" ")[0].equals(tag))
 			{
 				temp = i;
 				break;
@@ -305,9 +310,9 @@ public class XGL_Parser extends Parser{
 		for( String s : data)
 		{
 			temp = s.split("=");
-			if(temp[0] == "ID")
+			if(temp[0].equals("ID"))
 			{
-				return Integer.parseInt(temp[1]);
+				return Integer.parseInt(temp[1].replace("\"", ""));
 			}
 		}
 		return -1;
