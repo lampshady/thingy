@@ -1,16 +1,13 @@
 package importing;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.vecmath.Vector3f;
 
-public class XGL_Parser {
+public class XGL_Parser extends Parser{
 	/*
 	ArrayList<Material> matList;
 	ArrayList<Ambient_Light> ambLightList;
@@ -46,7 +43,7 @@ public class XGL_Parser {
 						The coordinate 1,1 corresponds to the lower right hand corner.
 						To represent a repeated or clamped texture, values for u and v greater than 1 or less than 0 may be used.
 	*/
-	public void readFile(String filePath)
+	public void readFile(BufferedReader f)
 	{
 		String[] temp = null;
 		int endTag;
@@ -57,22 +54,7 @@ public class XGL_Parser {
 		String[] possibleSubTags = {"MESH", "MAT", "OBJECT", "LINESTYLE", 
 				"POINTSTYLE", "TEXTURE", "TEXTURERGB", "TEXTURERGBA", "TC"};
 		
-		byte[] buffer = new byte[(int) new File(filePath).length()];
-	    BufferedInputStream f;
-	    
-		try {
-			f = new BufferedInputStream(new FileInputStream(filePath));
-			f.read(buffer);
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		
-	    tempData = new String(buffer);
+	    tempData = convertBufferToString(f);
 	    
 	    tempData = tempData.toUpperCase();
 	    tempData.replace("\n", "");
@@ -253,7 +235,7 @@ public class XGL_Parser {
 		//Stuff for Shader Groups goes here
 		
 		//Create new Face
-		faces.add(new Face(points, null, norms));
+		faces.add(new Face().setWithVectors(points, null, norms));
 	}
 	
 	private void readPoint(String[] fileData, String[] tagParams) 
@@ -329,5 +311,24 @@ public class XGL_Parser {
 			}
 		}
 		return -1;
+	}
+	
+	private String convertBufferToString(BufferedReader buffer)
+	{
+		//Apparently using string buffers is significantly faster than just concatenating strings.  So says the Internet. Whatever.
+		String temp;
+		StringBuffer data = new StringBuffer();
+		
+		try {
+			while( (temp = buffer.readLine()) != null)
+			{
+				data.append(temp);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return data.toString();
+		
 	}
 }
