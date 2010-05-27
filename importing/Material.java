@@ -10,7 +10,7 @@ public class Material {
 	Vector3f emission; //default 0.0f, 0.0f, 0.0f
 	float alpha; //default 1.0f
 	float shine; //default 0.0f
-	
+	static int id;
 	
 	public Material( Vector3f ambient, Vector3f diffuse)
 	{
@@ -24,6 +24,8 @@ public class Material {
 		alpha = 1;
 		
 		shine = 0;
+		
+		id++;
 	}
 	
 	public Material( Vector3f ambient, Vector3f diffuse, Vector3f specular)
@@ -41,6 +43,8 @@ public class Material {
 		alpha = 1;
 		
 		shine = 0;
+		
+		id++;
 	}
 	
 	public Material( Vector3f ambient, Vector3f diffuse, Vector3f specular, Vector3f emis)
@@ -61,6 +65,8 @@ public class Material {
 		alpha = 1;
 		
 		shine = 0;
+		
+		id++;
 	}
 	
 	public Material( Vector3f ambient, Vector3f diffuse, Vector3f specular, Vector3f emis, float a)
@@ -84,6 +90,8 @@ public class Material {
 			alpha = 1;
 		
 		shine = 0;
+		
+		id++;
 	}
 	
 	public Material( Vector3f ambient, Vector3f diffuse, Vector3f specular, Vector3f emis, float a, float s)
@@ -111,5 +119,29 @@ public class Material {
 		else
 			shine = 0;
 			
+		id++;
+	}
+	
+	public Vector3f ambientReflect() {
+		return ambientReflect;
+	}
+	public Vector3f diffuseReflect() {
+		return diffuseReflect;
+	}	
+	public Vector3f specularReflect() {
+		return specularReflect;
+	}
+	public Vector3f emission() {
+		return emission;
+	}
+	public float alpha() {
+		return alpha;
+	}
+	public float shine() {
+		return shine;
+	}
+	
+	public static int getNextID() {
+		return id + 1;
 	}
 }
