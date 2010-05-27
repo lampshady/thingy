@@ -15,12 +15,16 @@ public class XGL_Parser extends Parser{
 	ArrayList<Texture> textureListAlpha;
 	ArrayList<Texture> textureListNoAlpha;
 	*/
-	HashMap<Integer, Vector3f> vertices = new HashMap<Integer, Vector3f>();
-	HashMap<Integer, Vector3f> normals = new HashMap<Integer, Vector3f>();
-	ArrayList<Face> faces = new ArrayList<Face>();
+	//HashMap<Integer, Vector3f> vertices = new HashMap<Integer, Vector3f>();
+	//HashMap<Integer, Vector3f> normals = new HashMap<Integer, Vector3f>();
+	//ArrayList<Face> faces = new ArrayList<Face>();
+	World world;
+	
 	
 	//Do nothing in the contructor  BLAH, BLAH I SAY
-	XGL_Parser(){}
+	XGL_Parser(){
+		
+	}
 	
 	/*
 	Possible values for a child of <WORLD>:
@@ -45,6 +49,7 @@ public class XGL_Parser extends Parser{
 	*/
 	public void readFile(BufferedReader f)
 	{
+		
 		String[] temp = new String[1];
 		int endTag;
 		String[] tagParams;
@@ -63,6 +68,7 @@ public class XGL_Parser extends Parser{
 	    fileData = tempData.split("(\\s*>\\s*<\\s*)|(\\s*>\\s*)|(\\s*<\\s*)");
 	    
 	    if( fileData[1].equals("WORLD")){
+	    	world = new World();
 	    	for( int i = 2; i < fileData.length; i++)
 		    {
 	    		tagParams = fileData[i].split(" ");
@@ -80,24 +86,21 @@ public class XGL_Parser extends Parser{
 			    	}
 	    		}
 	    		
-		    	if(tagParams[0].equals("MESH"))
-		    	{
+		    	if(tagParams[0].equals("MESH")) {
 		    		readMesh(temp, tagParams);
-		    	}else if (tagParams[0].equals("MAT"))
-		    	{
+		    	}else if (tagParams[0].equals("MAT")) {
 		    		readMaterial(temp, tagParams);
+		    	}else if (tagParams[0].equals("OBJECT")) {
+		    		readObject(temp, tagParams);
+		    	} else if (tagParams[0].equals("PATCH")) {
+		    		readPatch(temp, tagParams);
 		    	}
+		    	
 		    }
 	    }else{
 	    	System.out.print("File does not start with <WORLD> tag");
 	    }
 	}
-
-	public ArrayList<Face> getFaces()
-	{
-		return faces;
-	}
-	
 	
 	/*
 	Optional Tags
@@ -162,6 +165,151 @@ public class XGL_Parser extends Parser{
 	    		readMaterial(temp, subTagParams);
 			}
 	    }
+	}
+	
+	private void readPatch(String[] fileData, String[] tagParams)
+	{	
+		String[] possibleSubTags = {"F","MAT"};
+		String[] subTagParams;
+		int endTag;
+		//int subTagID = 0;
+		String[] temp = new String[1];
+		
+		for( int i = 0; i < fileData.length; i++)
+	    {
+    		subTagParams = fileData[i].split(" ");
+
+    		for( int j = 0; j < possibleSubTags.length; j++)
+    		{
+    			if(subTagParams[0].equals(possibleSubTags[j]))
+		    	{
+		    		//subTagID = findID(tagParams);
+		    		
+		    		endTag = findTag("/"+possibleSubTags[j], fileData, i);
+		    		temp = new String[endTag-i-1];
+		    		System.arraycopy(fileData, i+1, temp, 0, endTag-i-1);
+		    		i=endTag;
+		    	}
+    		}
+    		
+    		if(subTagParams[0].equals("F"))	{
+	    		readFace(temp, subTagParams);
+			}else if (subTagParams[0].equals("MAT")){
+	    		readMaterial(temp, subTagParams);
+			}
+	    }
+	}
+	
+	private void readObject(String[] fileData, String[] tagParams)
+	{	
+		String[] possibleSubTags = {"TRANSFORM","MESHREF","OBJECT"};
+		String[] subTagParams;
+		int endTag;
+		//int subTagID = 0;
+		String[] temp = new String[1];
+		
+		for( int i = 0; i < fileData.length; i++)
+	    {
+    		subTagParams = fileData[i].split(" ");
+
+    		for( int j = 0; j < possibleSubTags.length; j++)
+    		{
+    			if(subTagParams[0].equals(possibleSubTags[j]))
+		    	{
+		    		//subTagID = findID(tagParams);
+		    		
+		    		endTag = findTag("/"+possibleSubTags[j], fileData, i);
+		    		temp = new String[endTag-i-1];
+		    		System.arraycopy(fileData, i+1, temp, 0, endTag-i-1);
+		    		i=endTag;
+		    	}
+    		}
+    		
+    		if(subTagParams[0].equals("TRANSFORM"))
+			{
+	    		readTransform(temp, subTagParams);
+			}else if( subTagParams[0].equals("MESHREF"))
+			{
+	    		readMeshRef(temp, subTagParams);
+			}else if( subTagParams[0].equals("OBJECT"))
+			{
+				readObject(temp, subTagParams);
+			}
+	    }
+	}
+	
+	private Transform readTransform(String[] fileData, String[] tagParams) {
+		//Face newFace;
+		int endTag;
+		int startTag;
+		String[] temp;
+		Vector3f up = new Vector3f();
+		Vector3f forward = new Vector3f();
+		Vector3f trans_position = new Vector3f();
+		Vector3f scale = new Vector3f();
+		boolean has_scale = false;
+
+		//Load the Forward
+		startTag = findTag("FORWARD", fileData, 0);
+		endTag = findTag("/FORWARD", fileData, startTag);	
+		if( startTag != 0) {
+			temp = new String[endTag-startTag-1];
+			System.arraycopy(fileData, startTag+1, temp, 0, endTag-startTag-1);
+			forward=new Vector3f(Float.parseFloat(temp[0]),Float.parseFloat(temp[1]),Float.parseFloat(temp[2]));
+		} else { System.out.print("Transform without 'forward' found, ILLEGAL!!!"); }
+
+		//Load the Up
+		startTag = findTag("UP", fileData, 0);
+		endTag = findTag("/UP", fileData, startTag);	
+		if( startTag != 0) {
+			temp = new String[endTag-startTag-1];
+			System.arraycopy(fileData, startTag+1, temp, 0, endTag-startTag-1);
+			up=new Vector3f(Float.parseFloat(temp[0]),Float.parseFloat(temp[1]),Float.parseFloat(temp[2]));
+		} else { System.out.print("Transform without 'up' found, ILLEGAL!!!"); }
+
+		//Load the Position
+		startTag = findTag("POSITION", fileData, 0);
+		endTag = findTag("/POSITION", fileData, startTag);	
+		if( startTag != 0) {
+			temp = new String[endTag-startTag-1];
+			System.arraycopy(fileData, startTag+1, temp, 0, endTag-startTag-1);
+			trans_position=new Vector3f(Float.parseFloat(temp[0]),Float.parseFloat(temp[1]),Float.parseFloat(temp[2]));
+		} else { System.out.print("Transform without 'position' found, ILLEGAL!!!"); }
+
+		//Load the Scale
+		startTag = findTag("SCALE", fileData, 0);
+		endTag = findTag("/SCALE", fileData, startTag);	
+		if( startTag != 0) {
+			temp = new String[endTag-startTag-1];
+			System.arraycopy(fileData, startTag+1, temp, 0, endTag-startTag-1);
+			scale=new Vector3f(Float.parseFloat(temp[0]),Float.parseFloat(temp[1]),Float.parseFloat(temp[2]));
+			has_scale = true;
+		}
+		if(has_scale) {
+			return new Transform(forward,up,trans_position,scale);
+		}else {
+			return new Transform(forward,up,trans_position);
+		}
+	}
+	
+	private int readMeshRef(String[] fileData, String[] tagParams) {
+			//Face newFace;
+			int endTag;
+			int startTag;
+			String[] temp;
+			int meshref=0;
+
+			//Load the Forward
+			startTag = findTag("MESHREF", fileData, 0);
+			endTag = findTag("/MESHREF", fileData, startTag);	
+			if( startTag != 0) {
+				temp = new String[endTag-startTag-1];
+				System.arraycopy(fileData, startTag+1, temp, 0, endTag-startTag-1);
+				meshref=Integer.parseInt(temp[0]);
+			} else { System.out.print("Meshref without parent found, ILLEGAL!!!"); }
+
+			//Create new transform
+			return meshref;	
 	}
 	
 	private void readFace(String[] fileData, String[] tagParams)
@@ -240,7 +388,7 @@ public class XGL_Parser extends Parser{
 		//Stuff for Shader Groups goes here
 		
 		//Create new Face
-		faces.add(new Face(points, null, norms));
+		faces.add(new Face());
 	}
 	
 	private void readPoint(String[] fileData, String[] tagParams) 
