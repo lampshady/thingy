@@ -18,6 +18,10 @@ public class Patch {
 	public void addMaterial(int index, Material mat) {
 		material.put(index, mat);
 	}
+	public HashMap<Integer, Face> getFaces()
+	{
+		return faces;
+	}
 	
 	public static int getNextID() {
 		return id+1;

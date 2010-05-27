@@ -45,16 +45,21 @@ public class FileLoader {
 		
 		Display.makeCurrent();
 		
-		ArrayList<Face> faces = parser.getFaces();
+		World world = parser.getWorld();
+		
+		
 		int listID = GL11.glGenLists(1);
-		
-		
 		GL11.glNewList(1,GL11.GL_COMPILE);
-/*			int[] tempfaces = (faces.get(i));
+		
+		world.
+		
+		/*			
+		  	int[] tempfaces = (faces.get(i));
 			int[] tempfacesnorms = (facesnorms.get(i));
 			int[] tempfacestexs = (facestexs.get(i));
-	*/		
-		//// Quad Begin Header ////
+		*/		
+		/*		
+ 		//// Quad Begin Header ////
 		int polytype;
 		if (faces.get(0).vertices.size() == 3) {
 			polytype = GL11.GL_TRIANGLES;
@@ -84,6 +89,7 @@ public class FileLoader {
 		GL11.glEnd();
 		GL11.glEndList();
 		Display.releaseContext();
+		 */
 		return listID;
 	}
 }

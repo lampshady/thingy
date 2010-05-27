@@ -2,6 +2,7 @@ package importing;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 public class World {
 	ArrayList<String> data_tag;
@@ -36,7 +37,19 @@ public class World {
 		return meshes.get(index);
 	}
 	
-	public Object getObject(int index) {
-		return objects.get(index);
+	public int getNumberOfObjects()
+	{
+		return objects.keySet().toArray().length;
+	}
+	
+	public Object_3D getObject(int index) {
+		return objects.get(objects.keySet().toArray()[index]);
+	}
+	
+	public void draw()
+	{  
+	    for( Map.Entry<Integer, Object_3D>  entry : objects.entrySet() ) {        
+	        meshes.get(entry.getValue().getMeshRef()).draw();
+	    }    
 	}
 }
