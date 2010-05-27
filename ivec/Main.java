@@ -1,5 +1,4 @@
 package ivec;
-
 import importing.FileLoader;
 
 import java.applet.Applet;
@@ -18,6 +17,8 @@ import javax.swing.JLabel;
 
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
+
+import renderer.Renderer;
 
 
 public class Main extends Applet {
@@ -63,6 +64,16 @@ public class Main extends Applet {
 		"2785-INSULATOR"
 	};
 
+	static Main uniqueInstance = new Main();
+	
+	private Main(){}
+	
+	public static Main getInstance()
+	{
+		return uniqueInstance;
+		
+	}
+	
 	public static void main(String args[])
 	{
 		Applet applet = new Main();
