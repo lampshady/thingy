@@ -4,13 +4,13 @@ import javax.vecmath.Vector3f;
 
 public class Material {
 	//For all of these:  x = red, y = green, b = blue
-	Vector3f ambientReflect; 	
-	Vector3f diffuseReflect;	
-	Vector3f specularReflect;	//default 0.0f, 0.0f, 0.0f
-	Vector3f emission; //default 0.0f, 0.0f, 0.0f
-	float alpha; //default 1.0f
-	float shine; //default 0.0f
-	static int id;
+	private Vector3f ambientReflect; 	
+	private Vector3f diffuseReflect;	
+	private Vector3f specularReflect;	//default 0.0f, 0.0f, 0.0f
+	private Vector3f emission; //default 0.0f, 0.0f, 0.0f
+	private float alpha; //default 1.0f
+	private float shine; //default 0.0f
+	private static int id;
 	
 	public Material( Vector3f ambient, Vector3f diffuse)
 	{
@@ -122,22 +122,22 @@ public class Material {
 		id++;
 	}
 	
-	public Vector3f ambientReflect() {
+	public Vector3f getAmbientReflect() {
 		return ambientReflect;
 	}
-	public Vector3f diffuseReflect() {
+	public Vector3f getDiffuseReflect() {
 		return diffuseReflect;
 	}	
-	public Vector3f specularReflect() {
+	public Vector3f getSpecularReflect() {
 		return specularReflect;
 	}
-	public Vector3f emission() {
+	public Vector3f getEmission() {
 		return emission;
 	}
-	public float alpha() {
+	public float getAlpha() {
 		return alpha;
 	}
-	public float shine() {
+	public float getShine() {
 		return shine;
 	}
 	
