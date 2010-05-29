@@ -32,8 +32,8 @@ public class Main extends Applet {
 	TextureList texture;
 	EntityList entity;
 	
-	static int width = 640;
-	static int height = 776;
+	public final static  int width = 640;
+	public final static int height = 776;
 	
 	static int popup_width = 320;
 	static int popup_height = 776;

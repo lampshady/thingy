@@ -10,7 +10,17 @@ public class Material {
 	private Vector3f emission; //default 0.0f, 0.0f, 0.0f
 	private float alpha; //default 1.0f
 	private float shine; //default 0.0f
-	private static int id;
+	private int reference;
+	
+	public int getReference()
+	{
+		return reference;
+	}
+	
+	public void setReference( int i)
+	{
+		reference = i;
+	}
 	
 	public Material( Vector3f ambient, Vector3f diffuse)
 	{
@@ -24,8 +34,6 @@ public class Material {
 		alpha = 1;
 		
 		shine = 0;
-		
-		id++;
 	}
 	
 	public Material( Vector3f ambient, Vector3f diffuse, Vector3f specular)
@@ -43,8 +51,6 @@ public class Material {
 		alpha = 1;
 		
 		shine = 0;
-		
-		id++;
 	}
 	
 	public Material( Vector3f ambient, Vector3f diffuse, Vector3f specular, Vector3f emis)
@@ -65,8 +71,6 @@ public class Material {
 		alpha = 1;
 		
 		shine = 0;
-		
-		id++;
 	}
 	
 	public Material( Vector3f ambient, Vector3f diffuse, Vector3f specular, Vector3f emis, float a)
@@ -90,8 +94,6 @@ public class Material {
 			alpha = 1;
 		
 		shine = 0;
-		
-		id++;
 	}
 	
 	public Material( Vector3f ambient, Vector3f diffuse, Vector3f specular, Vector3f emis, float a, float s)
@@ -118,30 +120,58 @@ public class Material {
 			shine = s;
 		else
 			shine = 0;
-			
-		id++;
 	}
 	
 	public Vector3f getAmbientReflect() {
 		return ambientReflect;
 	}
+	
+	public void setAmbientReflect( Vector3f abmRef)
+	{
+		ambientReflect = abmRef;
+	}
+	
 	public Vector3f getDiffuseReflect() {
 		return diffuseReflect;
-	}	
+	}
+	
+	public void setDiffuseReflect( Vector3f diffRef) {
+		diffuseReflect = diffRef;
+	}
+	
 	public Vector3f getSpecularReflect() {
 		return specularReflect;
 	}
+	
+	public void setSpecularReflect(Vector3f specRef )
+	{
+		specularReflect = specRef;
+	}
+	
 	public Vector3f getEmission() {
 		return emission;
 	}
+	
+	public void setEmission(Vector3f emiss)
+	{
+		emission = emiss;
+	}
+	
 	public float getAlpha() {
 		return alpha;
 	}
+	
+	public void setAlpha( float alph )
+	{
+		alpha = alph;
+	}
+	
 	public float getShine() {
 		return shine;
 	}
 	
-	public static int getNextID() {
-		return id + 1;
+	public void setShine( float _shine)
+	{
+		shine = _shine;
 	}
 }

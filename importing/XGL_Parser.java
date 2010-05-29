@@ -87,15 +87,11 @@ public class XGL_Parser extends Parser{
 	    		}
 	    		
 		    	if(tagParams[0].equals("MESH")) {
-		    		readMesh(temp, tagParams);
-		    	}else if (tagParams[0].equals("MAT")) {
-		    		readMaterial(temp, tagParams);
+		    		world.addMesh(readMesh(temp, tagParams));
 		    	}else if (tagParams[0].equals("OBJECT")) {
-		    		readObject(temp, tagParams);
-		    	} else if (tagParams[0].equals("PATCH")) {
-		    		readPatch(temp, tagParams);
-		    	}
-		    	
+		    		world.addObject(readObject(temp, tagParams));
+		    	}/*else if (tagParams[0].equals("MAT")) {
+		    		world.addMaterial(readMaterial(temp, tagParams));*/
 		    }
 	    }else{
 	    	System.out.print("File does not start with <WORLD> tag");
@@ -126,54 +122,61 @@ public class XGL_Parser extends Parser{
 		<TEXTURERGBA>
 		<TC>
 	*/
-	private void readMesh(String[] fileData, String[] tagParams)
+	private Mesh readMesh(String[] fileData, String[] tagParams)
 	{	
-		String[] possibleSubTags = {"F","P","N","MAT"};
+		Mesh newMesh = new Mesh();
+		String[] possibleSubTags = {"F", "P","N","MAT","PATCH"};
 		String[] subTagParams;
 		int endTag;
 		//int subTagID = 0;
-		String[] temp = new String[1];
+		String[] tagContents = new String[1];
 		
 		for( int i = 0; i < fileData.length; i++)
 	    {
     		subTagParams = fileData[i].split(" ");
 
+    		//get next tag, its sub parameters, and its contents
     		for( int j = 0; j < possibleSubTags.length; j++)
     		{
     			if(subTagParams[0].equals(possibleSubTags[j]))
 		    	{
-		    		//subTagID = findID(tagParams);
-		    		
 		    		endTag = findTag("/"+possibleSubTags[j], fileData, i);
-		    		temp = new String[endTag-i-1];
-		    		System.arraycopy(fileData, i+1, temp, 0, endTag-i-1);
+		    		tagContents = new String[endTag-i-1];
+		    		System.arraycopy(fileData, i+1, tagContents, 0, endTag-i-1);
 		    		i=endTag;
 		    	}
     		}
     		
+    		//Do things depending on what tag was read above
     		if(subTagParams[0].equals("F"))
 			{
-	    		readFace(temp, subTagParams);
+    			//Do nothing because this is stupid
+    			System.out.print("FUcking face in a mesh");
+	    		//newMesh.addFace(readFace(tagContents, subTagParams));
 			}else if( subTagParams[0].equals("P"))
 			{
-	    		readPoint(temp, subTagParams);
+	    		newMesh.addPoint(readPoint(tagContents, subTagParams));
 			}else if (subTagParams[0].equals("N"))
 			{
-	    		readNormal(temp, subTagParams);
+	    		newMesh.addNormal(readNormal(tagContents, subTagParams));
 			}else if (subTagParams[0].equals("MAT"))
 			{
-	    		readMaterial(temp, subTagParams);
+	    		newMesh.addMaterial(readMaterial(tagContents, subTagParams));
+			}else if (subTagParams[0].equals("PATCH"))
+			{
+				newMesh.addPatch(readPatch(tagContents, subTagParams));
 			}
 	    }
+		return newMesh;
 	}
 	
-	private void readPatch(String[] fileData, String[] tagParams)
+	private Patch readPatch(String[] fileData, String[] tagParams)
 	{	
+		Patch newPatch = new Patch();
 		String[] possibleSubTags = {"F","MAT"};
 		String[] subTagParams;
 		int endTag;
-		//int subTagID = 0;
-		String[] temp = new String[1];
+		String[] tagContents = new String[1];
 		
 		for( int i = 0; i < fileData.length; i++)
 	    {
@@ -183,25 +186,26 @@ public class XGL_Parser extends Parser{
     		{
     			if(subTagParams[0].equals(possibleSubTags[j]))
 		    	{
-		    		//subTagID = findID(tagParams);
-		    		
 		    		endTag = findTag("/"+possibleSubTags[j], fileData, i);
-		    		temp = new String[endTag-i-1];
-		    		System.arraycopy(fileData, i+1, temp, 0, endTag-i-1);
+		    		tagContents = new String[endTag-i-1];
+		    		System.arraycopy(fileData, i+1, tagContents, 0, endTag-i-1);
 		    		i=endTag;
 		    	}
     		}
-    		
     		if(subTagParams[0].equals("F"))	{
-	    		readFace(temp, subTagParams);
+	    		newPatch.addFace(readFace(tagContents, subTagParams));
 			}else if (subTagParams[0].equals("MAT")){
-	    		readMaterial(temp, subTagParams);
+				Material temp = readMaterial(tagContents, subTagParams);
+	    		newPatch.addMaterial(temp.getReference(), temp);
 			}
 	    }
+		
+		return newPatch;
 	}
 	
-	private void readObject(String[] fileData, String[] tagParams)
+	private Object_3D readObject(String[] fileData, String[] tagParams)
 	{	
+		Object_3D newObj = new Object_3D();
 		String[] possibleSubTags = {"TRANSFORM","MESHREF","OBJECT"};
 		String[] subTagParams;
 		int endTag;
@@ -227,15 +231,16 @@ public class XGL_Parser extends Parser{
     		
     		if(subTagParams[0].equals("TRANSFORM"))
 			{
-	    		readTransform(temp, subTagParams);
+	    		newObj.addTransform(readTransform(temp, subTagParams));
 			}else if( subTagParams[0].equals("MESHREF"))
 			{
-	    		readMeshRef(temp, subTagParams);
+	    		newObj.setMeshRef(readMeshRef(temp, subTagParams));
 			}else if( subTagParams[0].equals("OBJECT"))
 			{
-				readObject(temp, subTagParams);
+				newObj.addObject(readObject(temp, subTagParams));
 			}
 	    }
+		return newObj;
 	}
 	
 	private Transform readTransform(String[] fileData, String[] tagParams) {
@@ -308,27 +313,21 @@ public class XGL_Parser extends Parser{
 				meshref=Integer.parseInt(temp[0]);
 			} else { System.out.print("Meshref without parent found, ILLEGAL!!!"); }
 
-			//Create new transform
 			return meshref;	
 	}
 	
-	private void readFace(String[] fileData, String[] tagParams)
+	private Face readFace(String[] fileData, String[] tagParams)
 	{
-		//Face newFace;
+		
+		Face newFace = new Face();
 		int endTag;
 		int startTag;
 		int position;
-		//int subTagID;
-		String[] temp;
-		ArrayList<Vector3f> points = new ArrayList<Vector3f>();
-		ArrayList<Vector3f> norms = new ArrayList<Vector3f>();
-		String[] subTagParams;
 		
+		/*
 		//Load the Material
-		
 		startTag = findTag("MAT", fileData, 0);
 		endTag = findTag("\\MAT", fileData, startTag);
-			
 		if( startTag != 0)
 		{
 			subTagParams = fileData[startTag].split(" ");
@@ -338,49 +337,53 @@ public class XGL_Parser extends Parser{
 			System.arraycopy(fileData, startTag+1, temp, 0, endTag-startTag-1);
 			readMaterial(temp, subTagParams);
 		}
+		*/
+		
+		//Load the Material
+		newFace.setMaterial(readMeshRef(fileData, tagParams));
 		
 		for(int i = 1; i <= 3; i++)
 		{
 			startTag = findTag("FV" + i, fileData, 0);
 			endTag = findTag("/FV" + i, fileData, startTag);
 			
-			position = findTag("P", fileData, startTag) + 1;
+			/*position = findTag("P", fileData, startTag) + 1;
 			if( position < endTag && position != 1 )
 			{
 				fileData[position].replace(" ", "");
 				temp = fileData[position].split(",");
 				points.add( new Vector3f(Float.parseFloat(temp[0]), Float.parseFloat(temp[1]),Float.parseFloat(temp[2])) );
 			}else
-			{
+			{*/
 				position = findTag("PREF", fileData, startTag) + 1;
 				if(position < endTag && position != 0)
 				{
 					fileData[position].replace(" ", "");
-					points.add(vertices.get(Integer.parseInt(fileData[position])));
+					newFace.addPoint(Integer.parseInt(fileData[position]));
 				}else
 				{
 					System.out.print("Fessed up FV Tag. Point");
 				}
-			}
+			//}
 			
-			position = findTag("N", fileData, startTag) + 1;
+			/*position = findTag("N", fileData, startTag) + 1;
 			if( position < endTag && position != 1 )
 			{
 				fileData[position].replace(" ", "");
 				temp = fileData[position].split(",");
 				norms.add( new Vector3f(Float.parseFloat(temp[0]), Float.parseFloat(temp[1]),Float.parseFloat(temp[2])) );
 			}else
-			{
+			{*/
 				position = findTag("NREF", fileData, startTag) + 1;
 				if(position < endTag && position != 0)
 				{
 					fileData[position].replace(" ", "");
-					norms.add(vertices.get(Integer.parseInt(fileData[position])));
+					newFace.addNormal(Integer.parseInt(fileData[position]));
 				}else
 				{
 					System.out.print("Fessed up FV Tag. Normal");
 				}
-			}
+			//}
 		}
 		
 		//Stuff for Textures goes here
@@ -388,11 +391,12 @@ public class XGL_Parser extends Parser{
 		//Stuff for Shader Groups goes here
 		
 		//Create new Face
-		faces.add(new Face());
+		return newFace;
 	}
 	
-	private void readPoint(String[] fileData, String[] tagParams) 
+	private Point readPoint(String[] fileData, String[] tagParams) 
 	{
+		Point newPoint = new Point();
 		String[] temp = new String[3];
 		
 		if( fileData.length == 1)
@@ -401,24 +405,32 @@ public class XGL_Parser extends Parser{
 			
 			temp = fileData[0].split(",");
 			
-			vertices.put(findID(tagParams), new Vector3f(
-					Float.parseFloat(temp[0]),
-					Float.parseFloat(temp[1]),
-					Float.parseFloat(temp[2])
-			));
+			newPoint.setRef(findID(tagParams));
+			newPoint.setPosition(
+					new Vector3f(
+						Float.parseFloat(temp[0]),
+						Float.parseFloat(temp[1]),
+						Float.parseFloat(temp[2])
+					)
+			);
 		}else
 		{
 			System.out.print("Tag within a P tag.");
 		}
+		return newPoint;
 	}
 	
-	private void readMaterial(String[] temp, String[] tagParams) 
+	private Material readMaterial(String[] temp, String[] tagParams) 
 	{
+		Material newMat = new Material();
 		
+		newMat.setIndex();
+		return null;
 	}
 
-	private void readNormal(String[] fileData, String[] tagParams) 
+	private Normal readNormal(String[] fileData, String[] tagParams) 
 	{
+		Normal newNormal = new Normal();
 		String[] temp = new String[3];
 		
 		if( fileData.length == 1)
@@ -427,15 +439,19 @@ public class XGL_Parser extends Parser{
 			
 			temp = fileData[0].split(",");
 			
-			normals.put(findID(tagParams), new Vector3f(
-					Float.parseFloat(temp[0]),
-					Float.parseFloat(temp[1]),
-					Float.parseFloat(temp[2])
-			));
+			newNormal.setRef(findID(tagParams));
+			newNormal.setDirection(
+					new Vector3f(
+						Float.parseFloat(temp[0]),
+						Float.parseFloat(temp[1]),
+						Float.parseFloat(temp[2])
+					)
+			);
 		}else
 		{
 			System.out.print("Tag within a P tag.");
 		}
+		return newNormal;
 	}
 	
 	private int findTag(String tag, String[] data, int startAt)

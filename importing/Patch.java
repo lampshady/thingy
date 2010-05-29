@@ -1,9 +1,10 @@
 package importing;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Patch {
-	private HashMap<Integer, Face> faces;
+	private ArrayList<Face> faces;
 	private HashMap<Integer, Material> material;
 	private static int id = 0;
 	
@@ -11,14 +12,14 @@ public class Patch {
 		id++;
 	}
 	
-	public void addFace(int index, Face face) {
-		faces.put(index, face);
+	public void addFace(Face face) {
+		faces.add(face);
 	}
 	
 	public void addMaterial(int index, Material mat) {
 		material.put(index, mat);
 	}
-	public HashMap<Integer, Face> getFaces()
+	public ArrayList<Face> getFaces()
 	{
 		return faces;
 	}

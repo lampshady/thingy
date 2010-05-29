@@ -3,18 +3,35 @@ package importing;
 import javax.vecmath.Vector3f;
 
 public class Normal {
-	private Vector3f position;
-	private static int id=0;
+	private Vector3f direction;
+	private int reference;
 	
-	public Normal(Vector3f _pos) {
-		position = _pos;
+	public Normal(Vector3f _dir) {
+		direction = _dir;
 	}
 	
-	public Vector3f getPosition() {
-		return position;
+	public Normal() {
+		direction = new Vector3f(0,0,0);
+		reference = 0;
+	}
+
+	public Vector3f getDirection() {
+		return direction;
 	}
 	
-	public static int getNextID() {
-		return id + 1;
+	public void setDirection( Vector3f _dir)
+	{
+		direction = _dir;
+	}
+	
+	
+	public int getRef()
+	{
+		return reference;
+	}
+	
+	public void setRef( int ref )
+	{
+		reference = ref;
 	}
 }

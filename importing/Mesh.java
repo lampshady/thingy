@@ -15,11 +15,9 @@ public class Mesh {
 	private HashMap<Integer,Normal> normals;
 	private HashMap<Integer,Patch> patches;
 	private int face_size=3;
-	private static int id = 0;
 	private boolean per_vertex_normals = false;
 		
 	public Mesh() {
-		id++;
 	}
 	
 	public void setVertexNormals(boolean vertnorms){
@@ -29,16 +27,20 @@ public class Mesh {
 		return per_vertex_normals;
 	}
 	
-	public void addPoints(Point point) {
-		points.put(Point.getNextID(),point);
+	public void addPoint(Point point) {
+		points.put(point.getRef(),point);
 	}
 	
-	public void addNormals(Normal normal) {
-		normals.put(Normal.getNextID(),normal);
+	public void addNormal(Normal normal) {
+		normals.put(normal.getRef(),normal);
 	}
 	
-	public void addPatches(Patch patch) {
+	public void addPatch(Patch patch) {
 		patches.put(Patch.getNextID(),patch);
+	}
+	
+	public void addMaterial(Material material) {
+		materials.put(Material.getNextID(),material);
 	}
 	
 	public Point getPoint(int index) {
@@ -57,9 +59,6 @@ public class Mesh {
 		return materials.get(index);
 	}
 	
-	public static int getNextID() {
-		return id + 1;
-	}
 	
 	public void draw() throws LWJGLException
 	{
@@ -80,9 +79,8 @@ public class Mesh {
 		GL11.glBegin(polytype);	
 			GL11.glColor3f(0.5f,0.5f,0.6f);	
 			for ( Map.Entry<Integer, Patch> patchEntry : patches.entrySet()) {
-				for (Map.Entry<Integer, Face> faceEntry : patchEntry.getValue().getFaces().entrySet())
+				for (Face face : patchEntry.getValue().getFaces())
 				{
-					Face face = faceEntry.getValue();
 					GL11.glMaterialf(GL11.GL_FRONT, GL11.GL_SHININESS, materials.get(face.getMaterial()).getShine());
 
 					if(per_vertex_normals) {

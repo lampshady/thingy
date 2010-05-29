@@ -44,4 +44,14 @@ public class Object_3D {
 	public static int getNextID() {
 		return id + 1;
 	}
+
+	public int getNumberOfObjects() {
+		// TODO Auto-generated method stub
+		return objects.size();
+	}
+	
+	public Object_3D getObject(int index)
+	{
+		return objects.get(objects.keySet().toArray()[index]);
+	}
 }
