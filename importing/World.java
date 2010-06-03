@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.lwjgl.LWJGLException;
+import org.lwjgl.opengl.GL11;
 
 public class World {
 	ArrayList<String> data_tag;
@@ -14,15 +15,16 @@ public class World {
 	private HashMap<Integer,Object_3D> objects;
 	
 	public World() {
-		
+		meshes = new HashMap<Integer, Mesh>();
+		objects = new HashMap<Integer, Object_3D>();
 	}
 	
 	public void addMesh(Mesh _mesh) {
-		meshes.put(Mesh.getNextID(), _mesh);
+		meshes.put(_mesh.getReference(), _mesh);
 	}
 	
 	public void addObject(Object_3D obj) {
-		objects.put(Object_3D.getNextID(), obj);
+		objects.put(obj.getReference(), obj);
 	}
 	
 	public void addData(String data) {
@@ -57,13 +59,15 @@ public class World {
 	
 	public void drawObject(Object_3D obj) throws LWJGLException
 	{
-		obj.getTransform().draw();
+		GL11.glPushMatrix();
+		
+		//obj.getTransform().draw();
 		meshes.get(obj.getMeshRef()).draw();
 		for(int i = 0; i < obj.getNumberOfObjects(); i++)
 		{
 			drawObject(obj.getObject(i));
 		}
+		
+		GL11.glPopMatrix();
 	}
-	
-	
 }

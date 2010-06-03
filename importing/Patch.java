@@ -6,10 +6,11 @@ import java.util.HashMap;
 public class Patch {
 	private ArrayList<Face> faces;
 	private HashMap<Integer, Material> material;
-	private static int id = 0;
+	private int reference;
 	
 	public Patch() {
-		id++;
+		faces = new ArrayList<Face>();
+		material = new HashMap<Integer, Material>();
 	}
 	
 	public void addFace(Face face) {
@@ -23,8 +24,12 @@ public class Patch {
 	{
 		return faces;
 	}
-	
-	public static int getNextID() {
-		return id+1;
+
+	public void setReference(int reference) {
+		this.reference = reference;
+	}
+
+	public int getReference() {
+		return reference;
 	}
 }

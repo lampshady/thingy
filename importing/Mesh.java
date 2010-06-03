@@ -6,7 +6,6 @@ import java.util.Map;
 import javax.vecmath.Vector3f;
 
 import org.lwjgl.LWJGLException;
-import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 
 public class Mesh {
@@ -16,8 +15,13 @@ public class Mesh {
 	private HashMap<Integer,Patch> patches;
 	private int face_size=3;
 	private boolean per_vertex_normals = false;
+	private int reference;
 		
 	public Mesh() {
+		materials = new HashMap<Integer, Material>();
+		points = new HashMap<Integer, Point>();
+		normals = new HashMap<Integer, Normal>();
+		patches = new HashMap<Integer, Patch>();
 	}
 	
 	public void setVertexNormals(boolean vertnorms){
@@ -28,19 +32,19 @@ public class Mesh {
 	}
 	
 	public void addPoint(Point point) {
-		points.put(point.getRef(),point);
+		points.put(point.getReference(),point);
 	}
 	
 	public void addNormal(Normal normal) {
-		normals.put(normal.getRef(),normal);
+		normals.put(normal.getReference(),normal);
 	}
 	
 	public void addPatch(Patch patch) {
-		patches.put(Patch.getNextID(),patch);
+		patches.put(patch.getReference(),patch);
 	}
 	
 	public void addMaterial(Material material) {
-		materials.put(Material.getNextID(),material);
+		materials.put(material.getReference(),material);
 	}
 	
 	public Point getPoint(int index) {
@@ -66,7 +70,10 @@ public class Mesh {
 		Vector3f point = new Vector3f();
 		Vector3f[] normal = new Vector3f[3];
 		Vector3f face_normal = new Vector3f();
-		
+		Vector3f vert_normal = new Vector3f();
+		Vector3f a = new Vector3f();
+		Vector3f b = new Vector3f();
+
 		//Determine shape
 		if (face_size == 3) {
 			polytype = GL11.GL_TRIANGLES;
@@ -77,7 +84,7 @@ public class Mesh {
 		}
 		
 		GL11.glBegin(polytype);	
-			GL11.glColor3f(0.5f,0.5f,0.6f);	
+			//GL11.glColor3f(0.5f,0.5f,0.6f);	
 			for ( Map.Entry<Integer, Patch> patchEntry : patches.entrySet()) {
 				for (Face face : patchEntry.getValue().getFaces())
 				{
@@ -85,11 +92,12 @@ public class Mesh {
 
 					if(per_vertex_normals) {
 						for(int i=0; i<3;i++) {
-							face_normal = points.get(face.getPointRefs().get(i)).getPosition();
+							vert_normal = points.get(face.getPointRefs().get(i)).getPosition();
+							
 							GL11.glNormal3f(
-									face_normal.x,
-									face_normal.y,
-									face_normal.z
+									vert_normal.x,
+									vert_normal.y,
+									vert_normal.z
 							);
 							
 							point = points.get(face.getPointRefs().get(i)).getPosition();
@@ -105,9 +113,12 @@ public class Mesh {
 						for(int i=0; i<3;i++) {
 							normal[i] = points.get(face.getPointRefs().get(i)).getPosition();
 						}
-						normal[1].sub(normal[0]);
-						normal[2].sub(normal[0]);
-						face_normal.cross( normal[1], normal[2] );
+						
+						
+						a.sub(normal[0],normal[1]);
+						b.sub(normal[1],normal[2]);
+						
+						face_normal.cross( a, b );
 						
 						GL11.glNormal3f(
 								face_normal.x,
@@ -124,13 +135,16 @@ public class Mesh {
 							);
 						}
 					}
-					
-					
-					
 				}
 			}
 		GL11.glEnd();
-		GL11.glEndList();
-		Display.releaseContext();
+	}
+
+	public void setReference(int reference) {
+		this.reference = reference;
+	}
+
+	public int getReference() {
+		return reference;
 	}
 }

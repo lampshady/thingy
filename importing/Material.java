@@ -12,14 +12,17 @@ public class Material {
 	private float shine; //default 0.0f
 	private int reference;
 	
-	public int getReference()
+	public Material()
 	{
-		return reference;
-	}
-	
-	public void setReference( int i)
-	{
-		reference = i;
+		ambientReflect = new Vector3f();
+		diffuseReflect = new Vector3f();
+		
+		specularReflect = new Vector3f();
+		
+		emission = new Vector3f();	
+		
+		alpha = 1;
+		shine = 0;
 	}
 	
 	public Material( Vector3f ambient, Vector3f diffuse)
@@ -173,5 +176,29 @@ public class Material {
 	public void setShine( float _shine)
 	{
 		shine = _shine;
+	}
+	
+	public int getReference()
+	{
+		return reference;
+	}
+	
+	public void setReference( int i)
+	{
+		reference = i;
+	}
+
+	public void setAmbient(Vector3f a) {
+		ambientReflect = a;
+	}
+	
+	public void setDiffuse(Vector3f d)
+	{
+		diffuseReflect = d;
+	}
+	
+	public void setSpecular(Vector3f s)
+	{
+		specularReflect = s;
 	}
 }

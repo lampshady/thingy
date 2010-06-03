@@ -141,7 +141,7 @@ public class Main extends Applet {
 			popup.revalidate();
 			this.repaint();
 			
-			String filePath = "./lib/Models/xgltest.xgl";
+			String filePath = "./lib/10010260.xgl";
 			int drawID = FileLoader.loadFile(filePath);
 			
 			//showDisassemblyMenu();
@@ -152,6 +152,7 @@ public class Main extends Applet {
 				//Draw world
 				//render.draw((int)model_hash.get(displayed_model));
 				render.draw(drawID);
+				//render.draw(1);
 				
 				//Check if it's time to close
 				if (Display.isCloseRequested()) {

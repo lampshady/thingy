@@ -12,7 +12,7 @@ public class Normal {
 	
 	public Normal() {
 		direction = new Vector3f(0,0,0);
-		reference = 0;
+		setReference(0);
 	}
 
 	public Vector3f getDirection() {
@@ -23,15 +23,12 @@ public class Normal {
 	{
 		direction = _dir;
 	}
-	
-	
-	public int getRef()
-	{
-		return reference;
+
+	public void setReference(int reference) {
+		this.reference = reference;
 	}
-	
-	public void setRef( int ref )
-	{
-		reference = ref;
+
+	public int getReference() {
+		return reference;
 	}
 }

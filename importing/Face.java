@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public class Face {
 	private ArrayList<Integer> pref;
 	private ArrayList<Integer> nref;
-	private int material;
+	private int material = 0;
 
 	Face()
 	{

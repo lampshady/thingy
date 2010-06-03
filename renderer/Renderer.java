@@ -133,7 +133,7 @@ public class Renderer {
 		
 		//initialize the view
 		setPerspective();
-		GL11.glEnable(GL11.GL_TEXTURE_2D);     
+		//GL11.glEnable(GL11.GL_TEXTURE_2D);     
 		GL11.glShadeModel(GL11.GL_SMOOTH);
 		GL11.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 		GL11.glClearDepth(1.0f);
@@ -144,7 +144,7 @@ public class Renderer {
 		//GL11.glBlendFunc(GL11.GL_SRC_ALPHA,GL11.GL_ONE);
 
 		GL11.glEnable(GL11.GL_COLOR_MATERIAL);
-		GL11.glColorMaterial(GL11.GL_FRONT, GL11.GL_AMBIENT_AND_DIFFUSE);
+		//GL11.glColorMaterial(GL11.GL_FRONT, GL11.GL_AMBIENT_AND_DIFFUSE);
 		GL11.glMateriali(GL11.GL_FRONT, GL11.GL_SHININESS, 128);
 
 		GL11.glEnable(GL11.GL_LIGHTING);
