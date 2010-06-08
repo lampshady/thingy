@@ -44,11 +44,13 @@ public class XGL_Parser extends Parser{
 						The coordinate 1,1 corresponds to the lower right hand corner.
 						To represent a repeated or clamped texture, values for u and v greater than 1 or less than 0 may be used.
 	*/
+	
+	int position = 0;
 	public void readFile(BufferedReader f)
 	{
 		
 		String[] temp = new String[1];
-		int endTag;
+		int endTag = 0;
 		String[] tagParams;
 		//int tagID = 0;
 		String tempData;
@@ -66,27 +68,29 @@ public class XGL_Parser extends Parser{
 	    
 	    if( fileData[1].equals("WORLD")){
 	    	this.setWorld(new World());
-	    	for( int i = 2; i < fileData.length; i++)
+	    	for( position = 2; position < fileData.length; position++)
 		    {
-	    		tagParams = fileData[i].split(" ");
+	    		tagParams = fileData[position].split(" ");
 	    		for( int j = 0; j < possibleSubTags.length; j++)
 	    		{
 	    			if(tagParams[0].equals(possibleSubTags[j]))
 			    	{
 			    		//tagID = findID(tagParams);
 			    		
-			    		endTag = findTag("/"+possibleSubTags[j], fileData, i);
-			    		temp = new String[fileData.length-i-2];
-			    		System.arraycopy(fileData, i+1, temp, 0, (fileData.length-3)-i+1);
-			    		i=endTag;
+			    		endTag = findTag("/"+possibleSubTags[j], fileData, position);
+			    		temp = new String[fileData.length-position-2];
+			    		System.arraycopy(fileData, position+1, temp, 0, (fileData.length-3)-position+1);
+			    		
 			    		break;
 			    	}
 	    		}
 	    		
 		    	if(tagParams[0].equals("MESH")) {
 		    		this.getWorld().addMesh(readMesh(temp, tagParams));
+		    		position=endTag;
 		    	}else if (tagParams[0].equals("OBJECT")) {
-		    		this.getWorld().addObject(readObject(temp, tagParams));
+		    		position++;
+		    		this.getWorld().addObject(readObject(fileData, tagParams));
 		    	}/*else if (tagParams[0].equals("MAT")) {
 		    		world.addMaterial(readMaterial(temp, tagParams));*/
 		    }
@@ -181,6 +185,7 @@ public class XGL_Parser extends Parser{
 		int endTag;
 		String[] tagContents = new String[1];
 		
+		newPatch.setReference(findID(tagParams));
 		for( int i = 0; i < fileData.length; i++)
 	    {
     		subTagParams = fileData[i].split(" ");
@@ -211,20 +216,21 @@ public class XGL_Parser extends Parser{
 		Object_3D newObj = new Object_3D();
 		String[] possibleSubTags = {"TRANSFORM","MESHREF","OBJECT"};
 		String[] subTagParams;
-		int endTag;
+		int endTag = 0;
 		//int subTagID = 0;
 		String[] temp = new String[1];
-
+		
 		newObj.setReference(findID(tagParams));
 		
-		for( int i = 0; i < fileData.length; i++)
+		for( ; position < fileData.length; position++)
 	    {
-			if(fileData[i].equals("/OBJECT"))
+			if(fileData[position].equals("/OBJECT"))
 			{
+				//position++; //Move past the /OBJECT
 				return newObj;
 			}
 			
-    		subTagParams = fileData[i].split(" ");
+    		subTagParams = fileData[position].split(" ");
 
     		for( int j = 0; j < possibleSubTags.length; j++)
     		{
@@ -232,24 +238,27 @@ public class XGL_Parser extends Parser{
 		    	{
 		    		//subTagID = findID(tagParams);
 		    		
-		    		endTag = findTag("/"+possibleSubTags[j], fileData, i);
-		    		temp = new String[endTag-i-1];
-		    		System.arraycopy(fileData, i+1, temp, 0, endTag-i-1);
-		    		i=endTag;
+		    		endTag = findTag("/"+possibleSubTags[j], fileData, position);
+		    		temp = new String[endTag-position-1];
+		    		System.arraycopy(fileData, position+1, temp, 0, endTag-position-1);
 		    	}
     		}
     		
     		if(subTagParams[0].equals("TRANSFORM"))
 			{
 	    		newObj.addTransform(readTransform(temp, subTagParams));
+	    		position=endTag;
 			}else if( subTagParams[0].equals("MESHREF"))
 			{
 	    		newObj.setMeshRef(Integer.parseInt(temp[0]));
+	    		position=endTag;
 			}else if( subTagParams[0].equals("OBJECT"))
 			{
-				newObj.addObject(readObject(temp, subTagParams));
+				position++;
+				newObj.addObject(readObject(fileData, subTagParams));
 			}
 	    }
+		
 		return newObj;
 	}
 	
@@ -530,7 +539,7 @@ public class XGL_Parser extends Parser{
 		for( String s : data)
 		{
 			temp = s.split("=");
-			if(temp[0].equals("ID") || temp[0].equals("PATHID"))
+			if(temp[0].equals("ID") || temp[0].equals("PATHID") || temp[0].equals("PATCHID"))
 			{
 				return Integer.parseInt(temp[1].replace("\"", ""));
 			}

@@ -1,5 +1,6 @@
 package ivec;
 import importing.FileLoader;
+import importing.XGLParserNew;
 
 import java.applet.Applet;
 import java.awt.Canvas;
@@ -74,6 +75,7 @@ public class Main extends Applet {
 		
 	}
 	
+	
 	public static void main(String args[])
 	{
 		Applet applet = new Main();
@@ -83,8 +85,8 @@ public class Main extends Applet {
 		frame.setSize(width,height);
 		frame.setVisible(true);
 		applet.init();
-		
 	}
+	
 	
 	private static final long serialVersionUID = 1L;
 	
@@ -141,7 +143,7 @@ public class Main extends Applet {
 			popup.revalidate();
 			this.repaint();
 			
-			String filePath = "./lib/10010260.xgl";
+			String filePath = "./lib/10000111-8.xgl";
 			int drawID = FileLoader.loadFile(filePath);
 			
 			//showDisassemblyMenu();
@@ -165,6 +167,7 @@ public class Main extends Applet {
 			//System.exit(-1);
 		}
 	}
+	
 	/*
 	public void showDisassemblyMenu() throws LWJGLException
 	{

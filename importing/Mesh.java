@@ -66,6 +66,7 @@ public class Mesh {
 	
 	public void draw() throws LWJGLException
 	{
+		//System.out.print("===========Drawing Mesh: " + reference + "==================\n");
 		int polytype;
 		Vector3f point = new Vector3f();
 		Vector3f[] normal = new Vector3f[3];
@@ -84,59 +85,71 @@ public class Mesh {
 		}
 		
 		GL11.glBegin(polytype);	
-			//GL11.glColor3f(0.5f,0.5f,0.6f);	
-			for ( Map.Entry<Integer, Patch> patchEntry : patches.entrySet()) {
-				for (Face face : patchEntry.getValue().getFaces())
-				{
-					GL11.glMaterialf(GL11.GL_FRONT, GL11.GL_SHININESS, materials.get(face.getMaterial()).getShine());
-
-					if(per_vertex_normals) {
-						for(int i=0; i<3;i++) {
-							vert_normal = points.get(face.getPointRefs().get(i)).getPosition();
-							
-							GL11.glNormal3f(
-									vert_normal.x,
-									vert_normal.y,
-									vert_normal.z
-							);
-							
-							point = points.get(face.getPointRefs().get(i)).getPosition();
-							GL11.glVertex3f(
-								point.x,
-								point.y,
-								point.z
-							);
-						}
-
-						
-					} else {
-						for(int i=0; i<3;i++) {
-							normal[i] = points.get(face.getPointRefs().get(i)).getPosition();
-						}
+			
+		//float rand1 = (float) Math.random();
+		//float rand2 = (float) Math.random();
+		//float rand3 = (float) Math.random();
+			
+		GL11.glColor3f(0.5f, 0.5f, 0.5f);
+		for ( Map.Entry<Integer, Patch> patchEntry : patches.entrySet()) {
+			
+			for (Face face : patchEntry.getValue().getFaces())
+			{
+				//rand1 = (float) Math.random();
+				//rand2 = (float) Math.random();
+				//rand3 = (float) Math.random();
+				//GL11.glColor3f(rand1,rand2,rand3);
+				GL11.glMaterialf(GL11.GL_FRONT, GL11.GL_SHININESS, materials.get(face.getMaterial()).getShine());
+					
+				if(per_vertex_normals) {
+					for(int i=0; i<3;i++) {
 						
 						
-						a.sub(normal[0],normal[1]);
-						b.sub(normal[1],normal[2]);
-						
-						face_normal.cross( a, b );
+						vert_normal = points.get(face.getPointRefs().get(i)).getPosition();
 						
 						GL11.glNormal3f(
-								face_normal.x,
-								face_normal.y,
-								face_normal.z
+								vert_normal.x,
+								vert_normal.y,
+								vert_normal.z
 						);
 						
-						for(int i=0; i<face.getPointRefs().size();i++) {
-							point = points.get(face.getPointRefs().get(i)).getPosition();
-							GL11.glVertex3f(
-								point.x,
-								point.y,
-								point.z
-							);
-						}
+						point = points.get(face.getPointRefs().get(i)).getPosition();
+						GL11.glVertex3f(
+							point.x,
+							point.y,
+							point.z
+						);
+					}
+
+					
+				} else {
+					for(int i=0; i<3;i++) {
+						normal[i] = points.get(face.getPointRefs().get(i)).getPosition();
+					}
+					
+					
+					a.sub(normal[0],normal[1]);
+					b.sub(normal[1],normal[2]);
+					
+					face_normal.cross( a, b );
+					
+					GL11.glNormal3f(
+							face_normal.x,
+							face_normal.y,
+							face_normal.z
+					);
+					
+					for(int i=0; i<face.getPointRefs().size();i++) {
+						point = points.get(face.getPointRefs().get(i)).getPosition();
+						GL11.glVertex3f(
+							point.x,
+							point.y,
+							point.z
+						);
 					}
 				}
 			}
+		}
 		GL11.glEnd();
 	}
 

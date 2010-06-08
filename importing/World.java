@@ -13,6 +13,7 @@ public class World {
 	//Texture goes here
 	private HashMap<Integer,Mesh> meshes;
 	private HashMap<Integer,Object_3D> objects;
+	static int blah = 0;
 	
 	public World() {
 		meshes = new HashMap<Integer, Mesh>();
@@ -52,19 +53,26 @@ public class World {
 	
 	public void draw() throws LWJGLException
 	{  
-	    for( Map.Entry<Integer, Object_3D>  entry : objects.entrySet() ) {        
+		//System.out.print("WORLD DRAW CALLED =" + objects.size() + "\n");
+
+	    for( Map.Entry<Integer, Object_3D>  entry : objects.entrySet() ) {  
+	    	//System.out.print("=============" + entry.getKey() + "===========\n");
 	    	drawObject(entry.getValue());
-	    }    
+	    }   
 	}
 	
 	public void drawObject(Object_3D obj) throws LWJGLException
 	{
+		blah++;
+		//System.out.print("*******" + blah + "**********\n");
 		GL11.glPushMatrix();
 		
-		//obj.getTransform().draw();
+		obj.getTransform().draw();
 		meshes.get(obj.getMeshRef()).draw();
+		
 		for(int i = 0; i < obj.getNumberOfObjects(); i++)
 		{
+			//System.out.print("+++++++++_++++" + obj.getObject(i).getReference() + "++" + i +"+++++++_++++\n");
 			drawObject(obj.getObject(i));
 		}
 		
