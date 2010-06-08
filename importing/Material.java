@@ -125,34 +125,33 @@ public class Material {
 			shine = 0;
 	}
 	
-	public Vector3f getAmbientReflect() {
+	public Vector3f getAmbient() {
 		return ambientReflect;
 	}
 	
-	public void setAmbientReflect( Vector3f abmRef)
-	{
-		ambientReflect = abmRef;
-	}
-	
-	public Vector3f getDiffuseReflect() {
+	public Vector3f getDiffuse() {
 		return diffuseReflect;
 	}
 	
-	public void setDiffuseReflect( Vector3f diffRef) {
-		diffuseReflect = diffRef;
-	}
-	
-	public Vector3f getSpecularReflect() {
+	public Vector3f getSpecular() {
 		return specularReflect;
-	}
-	
-	public void setSpecularReflect(Vector3f specRef )
-	{
-		specularReflect = specRef;
 	}
 	
 	public Vector3f getEmission() {
 		return emission;
+	}
+	
+	public float getAlpha() {
+		return alpha;
+	}
+	
+	public float getShine() {
+		return shine;
+	}
+	
+	public int getReference()
+	{
+		return reference;
 	}
 	
 	public void setEmission(Vector3f emiss)
@@ -160,27 +159,14 @@ public class Material {
 		emission = emiss;
 	}
 	
-	public float getAlpha() {
-		return alpha;
-	}
-	
 	public void setAlpha( float alph )
 	{
 		alpha = alph;
 	}
 	
-	public float getShine() {
-		return shine;
-	}
-	
 	public void setShine( float _shine)
 	{
 		shine = _shine;
-	}
-	
-	public int getReference()
-	{
-		return reference;
 	}
 	
 	public void setReference( int i)

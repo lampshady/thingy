@@ -8,6 +8,7 @@ public class Object_3D {
 	private HashMap<Integer,Object_3D> objects;
 	private int meshref;
 	private int reference;
+	private String name;
 	//Data data;
 	//Name name;
 	
@@ -57,5 +58,9 @@ public class Object_3D {
 
 	public int getReference() {
 		return reference;
+	}
+
+	public void setName(String textContent) {
+		this.name = textContent;
 	}
 }

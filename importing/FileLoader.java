@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
+import java.lang.reflect.InvocationTargetException;
 
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
@@ -12,7 +13,7 @@ import org.lwjgl.opengl.GL11;
 public class FileLoader {
 	public FileLoader(){}
 	
-	public static int loadFile(String filePath) throws LWJGLException
+	public static int loadFile(String filePath) throws LWJGLException, SecurityException, IllegalArgumentException, NoSuchMethodException, IllegalAccessException, InvocationTargetException
 	{
 		String[] temp;
 		BufferedReader objfile = null;

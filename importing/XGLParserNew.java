@@ -1,8 +1,15 @@
 package importing;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.HashMap;
 
+import javax.vecmath.Vector3f;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -13,7 +20,21 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 public class XGLParserNew extends Parser{
-	public static void thing()
+	HashMap<String, String> nameConversion;
+	
+	XGLParserNew()
+	{
+		String[] tagNames = { "ALPHA", "SHINE", "AMB", "DIFF", "SPEC", "EMISS" };
+		String[] convertedNames = {"Alpha", "Shine", "Ambient", "Diffuse", "Specular", "Emission"};
+		
+		nameConversion = new HashMap<String, String>();
+		for(int i = 0; i < tagNames.length; i++)
+		{
+			nameConversion.put(tagNames[i], convertedNames[i]);
+		}
+	}
+	
+	public void thing() throws SecurityException, IllegalArgumentException, NoSuchMethodException, IllegalAccessException, InvocationTargetException
 	{
 		Document dom;
 		dom = parseXglFile("./lib/legoman.xgl");
@@ -43,7 +64,7 @@ public class XGLParserNew extends Parser{
 		return dom;
 	}
 	
-	private static void parseDocument(Document dom)
+	private void parseDocument(Document dom) throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException
 	{
 		//.
 		//Now that we've got the file in dom format, loop through elements
@@ -55,22 +76,37 @@ public class XGLParserNew extends Parser{
 		
 		NodeList tagList;
 		
-		tagList = rootElement.getChildNodes();
+		World newWorld = new World();
+		
+		/*
+		for(Method m: this.getClass().getDeclaredMethods())
+		{
+			System.out.println(m.getName());
+		}
+		*/
+		/*tagList = rootElement.getChildNodes();
 		for(int i = 0; i < tagList.getLength(); i++ )
 		{
 			System.out.println( "Node " + i + ": " + tagList.item(i).getNodeName());
-		}
+		}*/
 		
 		//Handle define tags
-		for(String tag : defineTags)
+		for(String tagName : defineTags)
 		{
-			tagList = rootElement.getElementsByTagName(tag);
+			tagList = rootElement.getElementsByTagName(tagName);
 			if( tagList != null && tagList.getLength() > 0)
 			{
 				
+				for( int i =0; i < tagList.getLength(); i++)
+				{
+					Method method;
+
+					method = this.getClass().getDeclaredMethod("handle" + tagName, Element.class, Object.class);
+					method.invoke(this, tagList.item(i), newWorld);
+				}
 			}else
 			{
-				System.out.println("No define tag " + tag + " in WORLD");
+				System.out.println("No define tag " + tagName + " in WORLD");
 				//throw exception?
 			}
 		}
@@ -102,9 +138,171 @@ public class XGLParserNew extends Parser{
 				System.out.println("Missing optional " + tag + " in WORLD");
 			}
 		}
+	}
+
+	
+	
+	private void handleMAT(Element rootElement, Object parent) throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException
+	{	
+		Material newMat = new Material();
+		String[] possibleSubTags = { "ALPHA", "SHINE", "AMB", "DIFF", "SPEC", "EMISS"};
+		String[] requiredTags = {"AMB", "DIFF"}; 
+	
+		NodeList tagList;
+		
+		//for each subtag
+		for( String tagName : possibleSubTags)
+		{
+			//all children for this tag(name)
+			tagList = rootElement.getElementsByTagName(tagName);
+			//if tags exist and do not occur more than once
+			if( tagList != null && tagList.getLength() == 1)
+			{
+				Method method;
+
+				//create an instance of the method
+				
+				if( !(tagList.item(0).getTextContent().contains(",")))
+				{
+					method = newMat.getClass().getDeclaredMethod("set" + nameConversion.get(tagName), float.class);
+					Object[] args = { (float) Float.parseFloat(tagList.item(0).getTextContent()) };
+					method.invoke(newMat, args );
+				}else
+				{
+					String[] temp = tagList.item(0).getTextContent().split(",");
+					if( temp.length == 3)
+					{
+						method = newMat.getClass().getDeclaredMethod("set" + nameConversion.get(tagName), Vector3f.class);
+						Object[] args = {new Vector3f(Float.parseFloat(temp[0]), Float.parseFloat(temp[1]),Float.parseFloat(temp[2])) };
+						method.invoke(newMat, args );
+					}else
+					{
+						System.out.println("Diffuse tag has wrong number of numbers");
+					}
+				}
+			}else
+			{
+				for( String reqTag : requiredTags)
+				{
+					if(reqTag.equals(tagName))
+					{
+						System.out.println("Problem with MAT Tag, " + tagName);
+					}
+				}
+			}
+		}
+				
+		//Set the material reference
+		newMat.setReference(Integer.parseInt(rootElement.getAttribute("ID")));
+		
+		parent.addMaterial( newMat );
+	}
+	
+	private void handleOBJECT(Element rootElement, Object parent) throws FileNotFoundException, SecurityException, IllegalArgumentException, NoSuchMethodException, IllegalAccessException, InvocationTargetException
+	{
+		Object_3D newObj = new Object_3D();
+		String[] possibleSubTags = { "MESH", "MESHREF", "TRANSFORM", "OBJECT", "DATA", "NAME"};
+	
+		NodeList tagList;
+		
+		//Pull in the Transform tag
+		tagList = rootElement.getElementsByTagName("TRANSFORM");
+		if( tagList != null && tagList.getLength() == 1)
+		{
+			handleTRANSFORM((Element)tagList.item(0), newObj);
+		}
+		
+		//Pull in the Mesh tag
+		tagList = rootElement.getElementsByTagName("MESH");
+		if( tagList != null && tagList.getLength() == 1)
+		{
+			handleMESH((Element)tagList.item(0), newObj);
+		}
+		else
+		{
+			tagList = rootElement.getElementsByTagName("MESHREF");
+			if( tagList != null && tagList.getLength() == 1)
+			{
+				newObj.setMeshRef(Integer.parseInt(tagList.item(0).getTextContent()));
+			}else
+			{
+				System.out.println("Funky Meshes inside an Object");
+			}
+		}
+		
+		//Pull in all data tags
+		tagList = rootElement.getElementsByTagName("DATA");
+		if( tagList != null && tagList.getLength() > 0)
+		{
+			for( int i = 0; i < tagList.getLength(); i++ )
+			{
+				handleDATA((Element)tagList.item(i), newObj);
+			}
+		}
+		
+		//Pull in name tag
+		tagList = rootElement.getElementsByTagName("NAME");
+		if( tagList != null && tagList.getLength() == 1)
+		{
+			newObj.setName(tagList.item(0).getTextContent());
+		}
+		
+		//Pull in all mat tags
+		tagList = rootElement.getElementsByTagName("MAT");
+		if( tagList != null && tagList.getLength() > 0)
+		{
+			for( int i = 0; i < tagList.getLength(); i++ )
+			{
+				handleMAT((Element)tagList.item(i), newObj);
+			}
+		}
+	}
+	
+	private void handleDATA(Element item, Object_3D newObj) {
+		// TODO Auto-generated method stub
 		
 	}
 
+	private void handleTRANSFORM(Element item, Object_3D newObj) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void handleMESH( Element rootElement, Object parent)
+	{
+		
+	}
+	
+	private void handleLINESTYLE()
+	{
+		
+	}
+	
+	private void handlePOINTSTYLE()
+	{
+		
+	}
+	
+	private void handleTEXTURE()
+	{
+		
+	}
+	
+	private void handleTEXTURERGB()
+	{
+		
+	}
+	
+	private void handleTEXTURERGBA()
+	{
+		
+	}
+	
+	private void handleTC()
+	{
+		
+	}
+	
 	@Override
 	public void readFile(BufferedReader f) {
 		// TODO Auto-generated method stub

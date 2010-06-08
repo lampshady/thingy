@@ -143,7 +143,7 @@ public class Main extends Applet {
 			popup.revalidate();
 			this.repaint();
 			
-			String filePath = "./lib/legoman.xgl";
+			String filePath = "./lib/10000111.xgl";
 			int drawID = FileLoader.loadFile(filePath);
 			
 			//showDisassemblyMenu();
