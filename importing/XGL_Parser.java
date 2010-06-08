@@ -269,7 +269,7 @@ public class XGL_Parser extends Parser{
 		Vector3f up = new Vector3f();
 		Vector3f forward = new Vector3f();
 		Vector3f trans_position = new Vector3f();
-		Vector3f scale = new Vector3f();
+		float scale = 1.0f;
 		boolean has_scale = false;
 
 		//Load the Forward

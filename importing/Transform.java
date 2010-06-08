@@ -1,5 +1,9 @@
 package importing;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
+
 import javax.vecmath.Vector3f;
 
 import org.lwjgl.opengl.GL11;
@@ -46,32 +50,49 @@ public class Transform {
 		return scale;
 	}
 
-	/*public void newdraw() {
-		double[][] transform_matrix = new double[4][4];
+
+	public void draw() {
+		//Create a matrix for transforming the object
+		float[] transform_matrix = new float[16];
+		
+		//we have forward and up so we take the cross product
+		//to produce a side(x-axis) vector
 		Vector3f side = new Vector3f(); 
 		side.cross(forward, up);
-		transform_matrix[0][0] = scale * side.x;
-		transform_matrix[0][1] = scale * side.y;
-		transform_matrix[0][2] = scale * side.z;
-		transform_matrix[0][3] = scale * position.x;
 		
-		transform_matrix[1][0] = up * side.x;
-		transform_matrix[1][1] = up * side.x;
-		transform_matrix[1][2] = up * side.x;
-		transform_matrix[1][3] = up * position.y;
+		//Create a 4x4 transformation matrix
+		//row 1
+		transform_matrix[0] = scale * side.x;
+		transform_matrix[1] = scale * up.y;
+		transform_matrix[2] = scale * forward.z;
+		transform_matrix[3] = position.x;
 		
-		transform_matrix[2][0] = forward * side.x;
-		transform_matrix[2][1] = forward * side.x;
-		transform_matrix[2][2] = forward * side.x;
-		transform_matrix[2][3] = forward * position.z;
+		//row 2
+		transform_matrix[4] = scale * side.x;
+		transform_matrix[5] = scale * up.x;
+		transform_matrix[6] = scale * forward.x;
+		transform_matrix[7] = position.y;
 		
-		transform_matrix[3][0] = 0;
-		transform_matrix[3][1] = 0;
-		transform_matrix[3][2] = 0;
-		transform_matrix[3][3] = 1;
+		//row 3
+		transform_matrix[8] = scale * side.x;
+		transform_matrix[9] = scale * up.x;
+		transform_matrix[10] = scale * forward.x;
+		transform_matrix[11] = position.z;
 		
-	}*/
+		//row 4
+		transform_matrix[12] = 0;
+		transform_matrix[13] = 0;
+		transform_matrix[14] = 0;
+		transform_matrix[15] = 1;
 	
+		//Create a float buffer for lwjgl
+		ByteBuffer buf = ByteBuffer.allocateDirect(16);
+        buf.order(ByteOrder.nativeOrder());
+
+        //multiply by the newly created scaled matrix
+		GL11.glMultMatrix((FloatBuffer)buf.asFloatBuffer().put(transform_matrix).flip());
+	}
+	/*
 	public void draw()
 	{
 		GL11.glTranslatef(position.x, position.y, position.z);
@@ -87,4 +108,5 @@ public class Transform {
 		//This one
 		//GL11.glRotatef(temp2.angle(new Vector3f(0,1,0)), 0, 0, 1);
 	}
+	*/
 }

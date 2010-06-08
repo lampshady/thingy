@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.lwjgl.LWJGLException;
+
 import org.lwjgl.opengl.GL11;
 
 public class World {
