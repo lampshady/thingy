@@ -1,19 +1,21 @@
 package importing;
 
+import javax.vecmath.Vector3f;
+
 public class Lighting {
-	private Ambient_Light ambient;
-	private Directional_Light dlight;
+	private Vector3f ambient;
+	private Vector3f dlight;
 	
-	public Lighting(Ambient_Light amb, Directional_Light dl) {
+	public Lighting(Vector3f amb, Vector3f dl) {
 		ambient = amb;
 		dlight = dl;
 	}
 	
-	public Ambient_Light getAmbientLight() {
+	public Vector3f getAmbientLight() {
 		return ambient;
 	}
 	
-	public Directional_Light getDirectionLight() {
+	public Vector3f getDirectionLight() {
 		return dlight;
 	}
 }

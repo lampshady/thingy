@@ -7,12 +7,12 @@ public class Object_3D {
 	//private HashMap<Integer,Mesh> mesh;
 	private HashMap<Integer,Object_3D> objects;
 	private int meshref;
-	private static int id = 0;
+	private int reference;
 	//Data data;
 	//Name name;
 	
 	public Object_3D() {
-		id++;
+		objects = new HashMap<Integer, Object_3D>();
 	}
 	
 	public void addTransform(Transform _transform) {
@@ -38,10 +38,24 @@ public class Object_3D {
 	*/
 	
 	public void addObject(Object_3D obj) {
-		objects.put(Object_3D.getNextID(), obj);
+		objects.put(obj.getReference(), obj);
 	}
 	
-	public static int getNextID() {
-		return id + 1;
+
+	public int getNumberOfObjects() {
+		return objects.size();
+	}
+	
+	public Object_3D getObject(int index)
+	{
+		return objects.get(objects.keySet().toArray()[index]);
+	}
+
+	public void setReference(int reference) {
+		this.reference = reference;
+	}
+
+	public int getReference() {
+		return reference;
 	}
 }

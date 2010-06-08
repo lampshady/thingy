@@ -5,21 +5,18 @@ import java.util.ArrayList;
 public class Face {
 	private ArrayList<Integer> pref;
 	private ArrayList<Integer> nref;
-	private int material;
-	private static int id;
-	
-	Face() {
-		id++;
-	}
+	private int material = 0;
 
+	Face()
+	{
+		pref = new ArrayList<Integer>();
+		nref = new ArrayList<Integer>();
+	}
+	
 	Face(ArrayList<Integer> _pref, ArrayList<Integer> _nref, int _material) {
 		pref = _pref;
 		nref = _nref;
 		material = _material;
-	}
-	
-	public static int getNextID() {
-		return id + 1;
 	}
 	
 	public ArrayList<Integer> getPointRefs() {
@@ -33,4 +30,20 @@ public class Face {
 	public int getMaterial() {
 		return material;
 	}
+	
+	public void addPoint(int reference)
+	{
+		pref.add(reference);
+	}
+	
+	public void addNormal(int reference)
+	{
+		nref.add(reference);
+	}
+	
+	public void setMaterial(int reference)
+	{
+		material = reference;
+	}
+	
 }

@@ -1,5 +1,6 @@
 package ivec;
 import importing.FileLoader;
+import importing.XGLParserNew;
 
 import java.applet.Applet;
 import java.awt.Canvas;
@@ -32,8 +33,8 @@ public class Main extends Applet {
 	TextureList texture;
 	EntityList entity;
 	
-	static int width = 640;
-	static int height = 776;
+	public final static  int width = 640;
+	public final static int height = 776;
 	
 	static int popup_width = 320;
 	static int popup_height = 776;
@@ -74,6 +75,7 @@ public class Main extends Applet {
 		
 	}
 	
+	
 	public static void main(String args[])
 	{
 		Applet applet = new Main();
@@ -83,8 +85,8 @@ public class Main extends Applet {
 		frame.setSize(width,height);
 		frame.setVisible(true);
 		applet.init();
-		
 	}
+	
 	
 	private static final long serialVersionUID = 1L;
 	
@@ -141,7 +143,7 @@ public class Main extends Applet {
 			popup.revalidate();
 			this.repaint();
 			
-			String filePath = "./lib/Models/xgltest.xgl";
+			String filePath = "./lib/10000111-8.xgl";
 			int drawID = FileLoader.loadFile(filePath);
 			
 			//showDisassemblyMenu();
@@ -152,6 +154,7 @@ public class Main extends Applet {
 				//Draw world
 				//render.draw((int)model_hash.get(displayed_model));
 				render.draw(drawID);
+				//render.draw(1);
 				
 				//Check if it's time to close
 				if (Display.isCloseRequested()) {
@@ -164,6 +167,7 @@ public class Main extends Applet {
 			//System.exit(-1);
 		}
 	}
+	
 	/*
 	public void showDisassemblyMenu() throws LWJGLException
 	{
