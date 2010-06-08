@@ -46,7 +46,7 @@ public class Transform {
 		return scale;
 	}
 
-	public void newdraw() {
+	/*public void newdraw() {
 		double[][] transform_matrix = new double[4][4];
 		Vector3f side = new Vector3f(); 
 		side.cross(forward, up);
@@ -70,7 +70,7 @@ public class Transform {
 		transform_matrix[3][2] = 0;
 		transform_matrix[3][3] = 1;
 		
-	}
+	}*/
 	
 	public void draw()
 	{
