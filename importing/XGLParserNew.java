@@ -44,6 +44,7 @@ public class XGLParserNew {
 	
 	private static void parseDocument(Document dom)
 	{
+		//.
 		//Now that we've got the file in dom format, loop through elements
 		Element rootElement = dom.getDocumentElement(); //Should be a WORLD tag
 		
