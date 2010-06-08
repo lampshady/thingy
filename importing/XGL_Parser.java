@@ -484,4 +484,10 @@ public class XGL_Parser extends Parser{
 		return data.toString();
 		
 	}
+
+	@Override
+	public World getWorld() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

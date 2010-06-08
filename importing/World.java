@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.lwjgl.LWJGLException;
+
 public class World {
 	ArrayList<String> data_tag;
 	float[] background = new float[3];
@@ -46,7 +48,7 @@ public class World {
 		return objects.get(objects.keySet().toArray()[index]);
 	}
 	
-	public void draw()
+	public void draw() throws LWJGLException
 	{  
 	    for( Map.Entry<Integer, Object_3D>  entry : objects.entrySet() ) {        
 	        meshes.get(entry.getValue().getMeshRef()).draw();

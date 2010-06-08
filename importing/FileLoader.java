@@ -51,8 +51,6 @@ public class FileLoader {
 		int listID = GL11.glGenLists(1);
 		GL11.glNewList(1,GL11.GL_COMPILE);
 		
-		world.
-		
 		/*			
 		  	int[] tempfaces = (faces.get(i));
 			int[] tempfacesnorms = (facesnorms.get(i));
