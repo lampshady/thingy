@@ -1,5 +1,6 @@
 package importing;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -11,11 +12,11 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-public class XGLParserNew {
-	public static void main()
+public class XGLParserNew extends Parser{
+	public static void thing()
 	{
 		Document dom;
-		dom = parseXglFile("/lib/legoman.xgl");
+		dom = parseXglFile("./lib/legoman.xgl");
 		
 		parseDocument(dom);
 	}
@@ -48,10 +49,31 @@ public class XGLParserNew {
 		//Now that we've got the file in dom format, loop through elements
 		Element rootElement = dom.getDocumentElement(); //Should be a WORLD tag
 		
+		String[] defineTags = { "MAT", "OBJECT", "MESH", "LINESTYLE", "POINTSTYLE", "TEXTURE", "TEXTURERGB", "TEXTURERGBA", "TC"};
 		String[] requiredTags = {"LIGHTING", "BACKGROUND" };
-		String[] optionalTags = {"OBJECT", "MESH", "DATA", "NAME" };
+		String[] optionalTags = { "DATA", "NAME" };
 		
 		NodeList tagList;
+		
+		tagList = rootElement.getChildNodes();
+		for(int i = 0; i < tagList.getLength(); i++ )
+		{
+			System.out.println( "Node " + i + ": " + tagList.item(i).getNodeName());
+		}
+		
+		//Handle define tags
+		for(String tag : defineTags)
+		{
+			tagList = rootElement.getElementsByTagName(tag);
+			if( tagList != null && tagList.getLength() > 0)
+			{
+				
+			}else
+			{
+				System.out.println("No define tag " + tag + " in WORLD");
+				//throw exception?
+			}
+		}
 		
 		//Handle required tags
 		for(String tag : requiredTags)
@@ -63,6 +85,7 @@ public class XGLParserNew {
 			}else
 			{
 				System.out.println("Missing " + tag + " in WORLD");
+				//throw exception?
 			}
 		}
 		
@@ -70,7 +93,7 @@ public class XGLParserNew {
 		for(String tag : optionalTags)
 		{
 			tagList = rootElement.getElementsByTagName(tag);
-			if( tagList != null && tagList.getLength() == 1)
+			if( tagList != null && tagList.getLength() > 0)
 			{
 			
 			}else
@@ -79,6 +102,12 @@ public class XGLParserNew {
 				System.out.println("Missing optional " + tag + " in WORLD");
 			}
 		}
+		
+	}
+
+	@Override
+	public void readFile(BufferedReader f) {
+		// TODO Auto-generated method stub
 		
 	}
 }

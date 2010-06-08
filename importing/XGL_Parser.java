@@ -322,10 +322,11 @@ public class XGL_Parser extends Parser{
 		}
 		
 		if(has_scale) {
-			return new Transform(forward,up,trans_position,scale);
+			//return new Transform(forward,up,trans_position,scale);
 		}else {
 			return new Transform(forward,up,trans_position);
 		}
+		return null;
 	}
 	
 	private Face readFace(String[] fileData, String[] tagParams)

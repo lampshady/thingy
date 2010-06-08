@@ -30,10 +30,12 @@ public class FileLoader {
 		
 		if( temp[temp.length-1].toLowerCase().equals("xgl"))
 		{
-			parser = new XGL_Parser();	
+			//parser = new XGL_Parser();
+			XGLParserNew x = new XGLParserNew();
+			x.thing();
 		}
 		
-		parser.readFile(objfile);	
+		//parser.readFile(objfile);	
 		 
 		return drawToList(parser);
 			

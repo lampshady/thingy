@@ -83,7 +83,7 @@ public class Transform {
 		transform_matrix[13] = 0;
 		transform_matrix[14] = 0;
 		transform_matrix[15] = 1;
-		
+	
 		//Create a float buffer for lwjgl
 		buf.put(transform_matrix).flip();
 

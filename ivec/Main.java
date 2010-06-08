@@ -65,9 +65,9 @@ public class Main extends Applet {
 		"2785-INSULATOR"
 	};
 
-	static Main uniqueInstance = new Main();
+	private static Main uniqueInstance = new Main();
 	
-	private Main(){}
+	public Main(){}
 	
 	public static Main getInstance()
 	{
@@ -143,7 +143,7 @@ public class Main extends Applet {
 			popup.revalidate();
 			this.repaint();
 			
-			String filePath = "./lib/10000111-8.xgl";
+			String filePath = "./lib/legoman.xgl";
 			int drawID = FileLoader.loadFile(filePath);
 			
 			//showDisassemblyMenu();
