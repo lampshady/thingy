@@ -1,17 +1,17 @@
 package importing;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
 import javax.vecmath.Vector3f;
 
+import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 
 public class Transform {
 	private Vector3f forward;
 	private Vector3f up;
 	private Vector3f position;
+	Vector3f side = new Vector3f(); 
 	private float scale;
 	
 	public Transform()
@@ -50,14 +50,13 @@ public class Transform {
 		return scale;
 	}
 
-
+	FloatBuffer buf = BufferUtils.createFloatBuffer(16);
 	public void draw() {
 		//Create a matrix for transforming the object
 		float[] transform_matrix = new float[16];
 		
 		//we have forward and up so we take the cross product
 		//to produce a side(x-axis) vector
-		Vector3f side = new Vector3f(); 
 		side.cross(forward, up);
 		
 		//Create a 4x4 transformation matrix
@@ -86,11 +85,10 @@ public class Transform {
 		transform_matrix[15] = 1;
 	
 		//Create a float buffer for lwjgl
-		ByteBuffer buf = ByteBuffer.allocateDirect(16);
-        buf.order(ByteOrder.nativeOrder());
+		buf.put(transform_matrix).flip();
 
         //multiply by the newly created scaled matrix
-		GL11.glMultMatrix((FloatBuffer)buf.asFloatBuffer().put(transform_matrix).flip());
+		GL11.glMultMatrix(buf);
 	}
 	/*
 	public void draw()
